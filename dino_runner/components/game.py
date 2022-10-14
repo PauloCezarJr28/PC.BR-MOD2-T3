@@ -58,7 +58,7 @@ class Game:
     def update_score(self):
         self.score += 1
         if self.score % 100 == 0:
-            self.game_speed += 5
+            self.game_speed += 2
 
     def draw(self):
         self.clock.tick(FPS)
@@ -92,22 +92,38 @@ class Game:
                 self.playing = False
                 self.running = False
             elif event.type == pygame.KEYDOWN:
+                self.score = 0
                 self.run()
 
     def show_menu(self):
-        self.screen.fill((255, 255, 255))
+        self.screen.fill((0, 0, 0))
         half_screen_height = SCREEN_HEIGHT // 2
         half_screen_width = SCREEN_WIDTH // 2
 
         if self.death_count == 0:
             font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("Press any key to start", True, (0, 0, 0))
+            text = font.render("Press any key to start", True, (255, 255, 255))
             text_rect = text.get_rect()
             text_rect.center = (half_screen_width, half_screen_height)
             self.screen.blit(text, text_rect)
         else:
-            self.screen.blit(ICON, (half_screen_width - 20, half_screen_height - 140))
+            font = pygame.font.Font(FONT_STYLE, 22)
+            text = font.render("Your Score: " +str(self.score), True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.center = (half_screen_width, half_screen_height)
+            self.screen.blit(text, text_rect)
+            font = pygame.font.Font(FONT_STYLE, 22)
+            text = font.render("Press any key to restart", True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.center = (half_screen_width, half_screen_height - 120)
+            self.screen.blit(text, text_rect)
+            font = pygame.font.Font(FONT_STYLE, 22)
+            text = font.render("You Died:" +str(self.death_count), True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.center = (half_screen_width, half_screen_height - 190)
+            self.screen.blit(text, text_rect)
+
 
         pygame.display.flip()
-
+        
         self.handle_events_on_menu()
