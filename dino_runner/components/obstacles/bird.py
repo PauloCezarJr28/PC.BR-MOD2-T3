@@ -7,7 +7,7 @@ class Bird(Obstacle):
     def __init__(self, image):
         self.type = 0
         super().__init__(image, self.type)
-        self.rect.y = random.randint (250, 290)
+        self.rect.y = random.randint (220, 320)
         self.index = 0
 
     def draw(self, screen):

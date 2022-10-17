@@ -1,13 +1,13 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RESET, GAME_OVER, DEFAULT_TYPE
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.utils.text_utils import draw_message_component
 from dino_runner.components.powerups.power_up_manager import PowerUpManager
 
-
-FONT_STYLE = "freesansbold.ttf"
-
+half_screen_height = SCREEN_HEIGHT // 2
+half_screen_width = SCREEN_WIDTH // 2
 
 class Game:
     def __init__(self):
@@ -62,8 +62,8 @@ class Game:
 
     def update_score(self):
         self.score += 1
-        if self.score % 100 == 0:
-            self.game_speed += 2
+        if self.score % 165 == 0:
+            self.game_speed += 2  
 
     def draw(self):
         self.clock.tick(FPS)
@@ -87,19 +87,20 @@ class Game:
         self.x_pos_bg -= self.game_speed
 
     def draw_score(self):
-        font = pygame.font.Font(FONT_STYLE, 22)
-        text = font.render(f"Score: {self.score}", True, (0, 0, 0))
-        text_rect = text.get_rect()
-        text_rect.center = (1000, 50)
-        self.screen.blit(text, text_rect)
-
+         draw_message_component(
+            f"Score: {self.score}",
+             self.screen, font_color = (0, 0, 0),
+              pos_x_center=1000,
+              pos_y_center=50
+        )
+          
     def draw_power_up_time(self):
         if self.player.has_power_up:
             time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
             if time_to_show >= 0:
                 draw_message_component(
-                    f"{self.player.type.capitalize()} enabled for {time_to_show} seconds",
-                    self.screen,
+                    f"{self.player.type.capitalize()} Enabled for {time_to_show} seconds",
+                    self.screen, font_color = (0, 0, 0),
                     font_size = 18,
                     pos_x_center = 500,
                     pos_y_center = 40
@@ -121,33 +122,18 @@ class Game:
 
     def show_menu(self):
         self.screen.fill((0, 0, 0))
-        half_screen_height = SCREEN_HEIGHT // 2
-        half_screen_width = SCREEN_WIDTH // 2
+        
 
         if self.death_count == 0:
-            font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("Press any key to start", True, (255, 255, 255))
-            text_rect = text.get_rect()
-            text_rect.center = (half_screen_width, half_screen_height)
-            self.screen.blit(text, text_rect)
+            draw_message_component("Presione uma tecla para Jogar!", self.screen, font_color = (57, 255, 20))
         else:
-            font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("Your Score: " +str(self.score), True, (255, 255, 255))
-            text_rect = text.get_rect()
-            text_rect.center = (half_screen_width, half_screen_height)
-            self.screen.blit(text, text_rect)
-            font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("Press any key to restart", True, (255, 255, 255))
-            text_rect = text.get_rect()
-            text_rect.center = (half_screen_width, half_screen_height - 120)
-            self.screen.blit(text, text_rect)
-            font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("You Died:" +str(self.death_count), True, (255, 255, 255))
-            text_rect = text.get_rect()
-            self.screen.blit(ICON, (half_screen_width - 40, half_screen_height - 30))
-            self.screen.blit(text, text_rect)
-
-
+            draw_message_component("Press any key to restart", self.screen, pos_y_center=half_screen_height + 70, pos_x_center=half_screen_width - 20)
+            draw_message_component(f"Your Score: {self.score}", self.screen, pos_y_center=half_screen_height + 140, pos_x_center=half_screen_width - 20)
+            draw_message_component(f"You Died: {self.death_count}", self.screen , pos_y_center=half_screen_height + 180, pos_x_center=half_screen_width - 20 )
+            self.screen.blit(ICON, (half_screen_width - 60, half_screen_height - 100))
+            self.screen.blit(RESET, (half_screen_width + 115, half_screen_height + 55))
+            self.screen.blit(GAME_OVER, (half_screen_width - 200, half_screen_height - 210))
+            
         pygame.display.flip()
         
         self.handle_events_on_menu()
